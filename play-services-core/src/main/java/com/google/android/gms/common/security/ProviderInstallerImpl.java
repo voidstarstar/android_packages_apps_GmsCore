@@ -28,7 +28,6 @@ import javax.net.ssl.SSLSocketFactory;
 
 public class ProviderInstallerImpl {
     public static void insertProvider(Context context) {
-        //Log.d("ProviderInstallerImpl", "yep, i should do something with Security here...");
         int insertProviderAt = Security.insertProviderAt(new OpenSSLProvider("GmsCore_OpenSSL"), 1);
 	try {
             if (insertProviderAt == 1) {
@@ -39,22 +38,20 @@ public class ProviderInstallerImpl {
                 declaredField = SSLServerSocketFactory.class.getDeclaredField("defaultServerSocketFactory");
                 declaredField.setAccessible(true);
                 declaredField.set(null, instance.getServerSocketFactory());
-                //Security.setProperty("ssl.SocketFactory.provider", "com.google.android.gms.org.conscrypt.OpenSSLSocketFactoryImpl");
                 Security.setProperty("ssl.SocketFactory.provider", "org.conscrypt.OpenSSLSocketFactoryImpl");
-                //Security.setProperty("ssl.ServerSocketFactory.provider", "com.google.android.gms.org.conscrypt.OpenSSLServerSocketFactoryImpl");
                 Security.setProperty("ssl.ServerSocketFactory.provider", "org.conscrypt.OpenSSLServerSocketFactoryImpl");
                 instance = SSLContext.getInstance("Default");
                 SSLContext.setDefault(instance);
                 HttpsURLConnection.setDefaultSSLSocketFactory(instance.getSocketFactory());
                 //HttpsURLConnection.setDefaultHostnameVerifier(new oat());
+                //TODO: Set the default HostnameVerifier
                 Log.i("ProviderInstaller", "Installed default security provider GmsCore_OpenSSL");
-            } else if (insertProviderAt != -1) {
-                StringBuilder stringBuilder = new StringBuilder(72);
-                stringBuilder.append("Failed to install security provider GmsCore_OpenSSL, result: ");
-                stringBuilder.append(insertProviderAt);
-                Log.e("ProviderInstaller", stringBuilder.toString());
+            } else {
+                Log.e("ProviderInstaller", "Failed to install security provider GmsCore_OpenSSL, result: " + insertProviderAt);
                 throw new SecurityException();
             }
-        } catch (Exception e){}
+        } catch (Exception e) {
+            Log.d("ProviderInstaller", "Failed to insert provider");
+        }
     }
 }
