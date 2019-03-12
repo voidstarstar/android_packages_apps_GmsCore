@@ -22,7 +22,11 @@ import org.conscrypt.OpenSSLProvider;
 import java.security.Security;
 
 public class ProviderInstallerImpl {
+    private static final String TAG = "GmsProviderInstaller";
+
     public static void insertProvider(Context context) {
-        Security.insertProviderAt(new OpenSSLProvider(), 1);
+        if (Security.insertProviderAt(new OpenSSLProvider(), 1) == -1) {
+            Log.d(TAG, "Provider is already installed.");
+	}
     }
 }
