@@ -127,7 +127,7 @@ class PushRegisterHandler extends Handler {
         String packageName = data.getString("pkg");
         Bundle subdata = data.getBundle("data");
         String sender = subdata.getString("sender");
-        boolean delete = subdata.get("delete") != null;
+        boolean delete = false;
 
         try {
             PackageUtils.checkPackageUid(context, packageName, callingUid);
